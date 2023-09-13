@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GraphicsClass.h"
 #include "D3DClass.h"
 #include "CameraClass.h"
@@ -25,9 +26,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Model = new ModelClass{};
-	m_Model->Initialize(m_Direct3D->GetDevice(), L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/source/character.fbx");
+	m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), 
+		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/source/character.fbx", 
+		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/bodyCol.png",
+		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/faceCol.png",
+		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/HairCol.png");
 
-	return false;
+	return true;
 }
 
 void GraphicsClass::ShutDown()
@@ -58,7 +63,7 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render()
 {
-	m_Direct3D->BeginScene(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Direct3D->BeginScene(0.2f, 0.2f, 0.2f, 1.0f);
 	m_Camera->Render();
 	
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;

@@ -4,7 +4,7 @@ class InputClass
 {
 public:
 	InputClass();
-	InputClass(const InputClass&);
+	InputClass(const InputClass& other);
 	~InputClass();
 
 	bool Initialize(HINSTANCE, HWND, int, int);
@@ -12,8 +12,6 @@ public:
 	bool Frame();
 
 	bool IsEscapePressed();
-	bool IsLeftArrowPressed();
-	bool IsRightArrowPressed();
 
 	void GetMouseLocation(int&, int&);
 private:

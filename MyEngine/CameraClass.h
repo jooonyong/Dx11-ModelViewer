@@ -3,7 +3,7 @@
 class CameraClass :public AlignedAllocationPolicy<16>
 {
 public:
-	CameraClass() = default;
+	CameraClass();
 	CameraClass(const CameraClass& other);
 	~CameraClass();
 

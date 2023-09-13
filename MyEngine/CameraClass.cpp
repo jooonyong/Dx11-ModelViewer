@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CameraClass.h"
 
-CameraClass::CameraClass(const CameraClass& other)
+CameraClass::CameraClass()
 {
 	m_position.x = 0;
 	m_position.y = 0;
@@ -9,6 +9,16 @@ CameraClass::CameraClass(const CameraClass& other)
 	m_rotation.x = 0;
 	m_rotation.y = 0;
 	m_rotation.z = 0;
+}
+
+CameraClass::CameraClass(const CameraClass& other)
+{
+	m_position.x = other.m_position.x;
+	m_position.y = other.m_position.y;
+	m_position.z = other.m_position.z;
+	m_rotation.x = other.m_rotation.x;
+	m_rotation.y = other.m_rotation.y;
+	m_rotation.z = other.m_rotation.z;
 }
 
 CameraClass::~CameraClass()
@@ -52,11 +62,12 @@ void CameraClass::Render()
 
 	XMVECTOR positionVector = XMLoadFloat3(&position);
 
-	float radians = m_rotation.y * 0.0174532925f;
+	float xRadians = m_rotation.x * 0.0174532925f; //0.0174532925f = pi / 180;
+	float yRadians = m_rotation.y * 0.0174532925f;
 
-	lookAt.x = sinf(radians) + m_position.x;
+	lookAt.x = sinf(yRadians) + m_position.x;
 	lookAt.y = m_position.y;
-	lookAt.z = cosf(radians) + m_position.z;
+	lookAt.z = cosf(yRadians) + m_position.z;
 
 	XMVECTOR lookAtVector = XMLoadFloat3(&lookAt);
 	m_viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
@@ -64,6 +75,6 @@ void CameraClass::Render()
 
 void CameraClass::GetViewMatrix(XMMATRIX& viewMatrix)
 {
-	m_viewMatrix = viewMatrix;
+	viewMatrix = m_viewMatrix;
 }
 

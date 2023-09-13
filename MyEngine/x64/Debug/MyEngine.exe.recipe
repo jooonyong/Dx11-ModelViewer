@@ -5,7 +5,14 @@
       <FullPath>C:\Users\junyong\source\repos\MyEngine\x64\Debug\MyEngine.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\junyong\source\repos\MyEngine\x64\Debug\ModelPS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\junyong\source\repos\MyEngine\x64\Debug\ModelVS.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

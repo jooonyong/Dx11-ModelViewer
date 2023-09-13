@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "TextureClass.h"
 #include "ModelClass.h"
 
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -13,7 +14,7 @@ ModelClass::ModelClass(const ModelClass& other)
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFileName)
+bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const WCHAR* modelFileName, const WCHAR* textureFilename1, const WCHAR* textureFilename2, const WCHAR* textureFilename3)
 {
 	if (!LoadModel(modelFileName))
 	{
@@ -23,13 +24,14 @@ bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFileName)
 	{
 		return false;
 	}
-	return true;
+	return LoadTextures(device, deviceContext, textureFilename1, textureFilename2, textureFilename3);
 }
 
 void ModelClass::ShutDown()
 {
 	ShutDownBuffers();
 	ReleaseModel();
+	ReleaseTextures();
 }
 
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
@@ -51,7 +53,8 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	for (int i = 0; i < m_vertexCount; i++)
 	{
 		vertices[i].position = XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
-		//vertices[i].texture = XMFLOAT2(m_model[i].tu, m_model[i].tv);
+		vertices[i].texture = XMFLOAT2(m_model[i].tu, m_model[i].tv);
+		vertices[i].normal = XMFLOAT3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
 	}
 
 	D3D11_BUFFER_DESC vertexBufferDesc;
@@ -141,9 +144,24 @@ bool ModelClass::LoadModel(const WCHAR* modelFileName)
 
 	for (int j = 0; j < m_vertexCount; j++)
 	{
-		m_model[j].x = mesh->mVertices[j].x;
-		m_model[j].y = mesh->mVertices[j].y;
-		m_model[j].z = mesh->mVertices[j].z;
+		if (mesh->HasPositions())
+		{
+			m_model[j].x = mesh->mVertices[j].x;
+			m_model[j].y = mesh->mVertices[j].y;
+			m_model[j].z = mesh->mVertices[j].z;
+		}
+		if (mesh->HasTextureCoords(0))
+		{
+			m_model[j].tu = mesh->mTextureCoords[0][j].x;
+			m_model[j].tv = mesh->mTextureCoords[0][j].y;
+		}
+		if (mesh->HasNormals())
+		{
+			m_model[j].nx = mesh->mNormals[j].x;
+			m_model[j].ny = mesh->mNormals[j].y;
+			m_model[j].nz = mesh->mNormals[j].z;
+		}
+		
 	}
 
 	m_indexCount = mesh->mNumFaces * 3;
@@ -164,9 +182,71 @@ bool ModelClass::LoadModel(const WCHAR* modelFileName)
 
 void ModelClass::ReleaseModel()
 {
+	if (m_indices)
+	{
+		delete[] m_indices;
+		m_indices = nullptr;
+	}
 	if (m_model)
 	{
 		delete[] m_model;
 		m_model = nullptr;
 	}
 }
+
+bool ModelClass::LoadTextures(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const WCHAR* textureFilename1, const WCHAR* textureFilename2, const WCHAR* textureFilename3)
+{
+	m_texture1 = new TextureClass{};
+	if (!m_texture1)
+	{
+		return false;
+	}
+	if (!m_texture1->Initialize(device, deviceContext, textureFilename1))
+	{
+		return false;
+	}
+
+	m_texture2 = new TextureClass{};
+	if (!m_texture2)
+	{
+		return false;
+	}
+	if (!m_texture2->Initialize(device, deviceContext, textureFilename2))
+	{
+		return false;
+	}
+
+	m_texture3 = new TextureClass{};
+	if (!m_texture3)
+	{
+		return false;
+	}
+	if (!m_texture3->Initialize(device, deviceContext, textureFilename3))
+	{
+		return false;
+	}
+	return true;
+}
+
+void ModelClass::ReleaseTextures()
+{
+	if (m_texture1)
+	{
+		m_texture1->ShutDown();
+		delete m_texture1;
+		m_texture1 = nullptr;
+	}
+	if (m_texture2)
+	{
+		m_texture2->ShutDown();
+		delete m_texture2;
+		m_texture2 = nullptr;
+	}
+	if (m_texture3)
+	{
+		m_texture3->ShutDown();
+		delete m_texture3;
+		m_texture3= nullptr;
+	}
+}
+

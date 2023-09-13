@@ -108,7 +108,6 @@ bool SystemClass::Frame()
 	}
 
 	return true;
-	//return m_Graphics->Render();
 }
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {

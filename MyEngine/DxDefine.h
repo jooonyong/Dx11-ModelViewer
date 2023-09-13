@@ -15,7 +15,6 @@
 #include <d3dcompiler.h>
 #include <directxmath.h>
 
-//#include "DDSTextureLoader.h"
 using namespace DirectX;
 
 #include "AlignedAllocationPolicy.h"
