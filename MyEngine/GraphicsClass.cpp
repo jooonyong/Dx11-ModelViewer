@@ -3,6 +3,7 @@
 #include "D3DClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
+#include "ModelShaderClass.h"
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
@@ -25,23 +26,33 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+	
 	m_Model = new ModelClass{};
-	m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), 
-		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/source/character.fbx", 
+	if (!m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(),
+		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/source/character.fbx",
 		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/bodyCol.png",
 		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/faceCol.png",
-		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/HairCol.png");
+		L"C:/Users/junyong/source/repos/MyEngine/MyEngine/Model/textures/HairCol.png"))
+	{
+		return false;
+	}
+
+	m_ModelShader = new ModelShaderClass{};
+	if (!m_ModelShader->Initialize(m_Direct3D->GetDevice(), hwnd))
+	{
+		return false;
+	}
 
 	return true;
 }
 
 void GraphicsClass::ShutDown()
 {
-	if (m_Direct3D)
+	if (m_ModelShader)
 	{
-		m_Direct3D->ShutDown();
-		delete m_Direct3D;
-		m_Direct3D = nullptr;
+		m_ModelShader->ShutDown();
+		delete m_ModelShader;
+		m_ModelShader = nullptr;
 	}
 	if (m_Camera)
 	{
@@ -53,6 +64,12 @@ void GraphicsClass::ShutDown()
 		m_Model->ShutDown();
 		delete m_Model;
 		m_Model = nullptr;
+	}
+	if (m_Direct3D)
+	{
+		m_Direct3D->ShutDown();
+		delete m_Direct3D;
+		m_Direct3D = nullptr;
 	}
 }
 
@@ -71,8 +88,10 @@ bool GraphicsClass::Render()
 	m_Direct3D->GetWorldMatrix(worldMatrix);
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-	m_Model->Render(m_Direct3D->GetDeviceContext());
+	m_Model->Render(m_Direct3D->GetDeviceContext()); 
 	
+	m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_Model->GetTexture1(), m_Model->GetTexture2(), m_Model->GetTexture3())
 	m_Direct3D->EndScene();
 
 	return true;

@@ -11,7 +11,7 @@ ModelShaderClass::ModelShaderClass(const ModelShaderClass& other)
 
 bool ModelShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
-	return InitializeShader(device, hwnd, L"./Shader/ModelVs.hlsl", L"./Shader/ModelPS.hlsl");
+	return InitializeShader(device, hwnd, L"./ModelVS.hlsl", L"./ModelPS.hlsl");
 }
 
 void ModelShaderClass::ShutDown()
@@ -20,9 +20,9 @@ void ModelShaderClass::ShutDown()
 }
 
 bool ModelShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, 
-	XMMATRIX projectionMatrix, ID3D11ShaderResourceView** textures)
+	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture)
 {
-	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textures))
+	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, bodyTexture, faceTexture, hairTexture))
 	{
 		return false;
 	}
@@ -162,17 +162,77 @@ bool ModelShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 
 void ModelShaderClass::ShutDownShader()
 {
+	if (m_sampleState)
+	{
+		m_sampleState->Release();
+		m_sampleState = nullptr;
+	}
+
+	if (m_matrixBuffer)
+	{
+		m_matrixBuffer->Release();
+		m_matrixBuffer = nullptr;
+	}
+	if (m_layout)
+	{
+		m_layout->Release();
+		m_layout = nullptr;
+	}
+	if (m_pixelShader)
+	{
+		m_pixelShader->Release();
+		m_pixelShader = nullptr;
+	}
+	if (m_vertexShader)
+	{
+		m_vertexShader->Release();
+		m_vertexShader = nullptr;
+	}
 }
 
-void ModelShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR*)
+void ModelShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 {
+	OutputDebugStringA(reinterpret_cast<const char*>(errorMessage->GetBufferPointer()));
+
+	MessageBox(hwnd, L"Could not compile Shader", shaderFilename, MB_OK);
 }
 
-bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView**)
+bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
+	ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture)
 {
-	return false;
+	HRESULT result;
+
+	worldMatrix = XMMatrixTranspose(worldMatrix);
+	viewMatrix = XMMatrixTranspose(viewMatrix);
+	projectionMatrix = XMMatrixTranspose(projectionMatrix);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	if (FAILED(deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	{
+		return false;
+	}
+	
+	MatrixBufferType* dataPtr = (MatrixBufferType*)mappedResource.pData;
+	dataPtr->world = worldMatrix;
+	dataPtr->view = viewMatrix;
+	dataPtr->projection = projectionMatrix;
+		
+	deviceContext->Unmap(m_matrixBuffer, 0);
+
+	deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+
+	deviceContext->PSSetShaderResources(0, 1, &bodyTexture);
+	deviceContext->PSSetShaderResources(1, 1, &faceTexture);
+	deviceContext->PSSetShaderResources(2, 1, &hairTexture);
 }
 
 void ModelShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
+	deviceContext->IASetInputLayout(m_layout);
+	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
+	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+
+	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+
+	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
