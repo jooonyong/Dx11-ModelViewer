@@ -1,0 +1,13 @@
+.vs
+x64
+MyEngine/Include
+MyEngine/lilb
+MyEngine/Model
+MyEngine/x64
+MyEngine/MyEngine.aps
+MyEngine/MyEngine.ico
+MyEngine/small.ico
+MyEngine/MyEngine.rc
+MyEngine/MyEngine.vcxproj
+MyEngine/MyEngine.vcxproj.filters
+MyEngine/MyEngine.vcxproj.user
