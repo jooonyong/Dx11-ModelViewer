@@ -80,7 +80,7 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render()
 {
-	m_Direct3D->BeginScene(0.2f, 0.2f, 0.2f, 1.0f);
+	m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
 	m_Camera->Render();
 	
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
@@ -88,10 +88,13 @@ bool GraphicsClass::Render()
 	m_Direct3D->GetWorldMatrix(worldMatrix);
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-	m_Model->Render(m_Direct3D->GetDeviceContext()); 
+	for (int i = 0; i < m_Model->GetNumMeshes(); i++)
+	{
+		m_Model->Render(m_Direct3D->GetDeviceContext(), i); //버텍스 버퍼 인덱스버퍼 설정
+		m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model->GetTexture1(), m_Model->GetTexture2(), m_Model->GetTexture3());
+	}
 	
-	m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_Model->GetTexture1(), m_Model->GetTexture2(), m_Model->GetTexture3())
 	m_Direct3D->EndScene();
 
 	return true;

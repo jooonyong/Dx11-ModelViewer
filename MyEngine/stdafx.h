@@ -14,5 +14,6 @@
 #include <memory.h>
 #include <tchar.h>
 #include <string>
+#include <vector>
 
 #include "DxDefine.h"

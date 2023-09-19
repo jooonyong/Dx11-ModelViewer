@@ -1,7 +1,7 @@
 ﻿  ModelClass.cpp
-C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(57,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(171,22): warning C4018: '<': signed/unsigned mismatch
-C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(194,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(76,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(193,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(216,22): warning C4018: '<': signed/unsigned mismatch
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\include\xstring(2728,53): warning C4244: 'argument': conversion from 'wchar_t' to 'const _Elem', possible loss of data
           with
           [
@@ -15,12 +15,12 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.3282
               _Sent=wchar_t *,
               _Size=unsigned __int64
           ]
-C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(142,25): message : see reference to function template instantiation 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string<std::_String_iterator<std::_String_val<std::_Simple_types<_Elem>>>,0>(_Iter,_Iter,const _Alloc &)' being compiled
+C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(164,25): message : see reference to function template instantiation 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string<std::_String_iterator<std::_String_val<std::_Simple_types<_Elem>>>,0>(_Iter,_Iter,const _Alloc &)' being compiled
           with
           [
               _Elem=wchar_t,
               _Iter=std::_String_iterator<std::_String_val<std::_Simple_types<wchar_t>>>,
               _Alloc=std::allocator<char>
           ]
-C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(142,25): message : see the first reference to 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string' in 'ModelClass::LoadModel'
+C:\Users\junyong\source\repos\MyEngine\MyEngine\ModelClass.cpp(164,25): message : see the first reference to 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string' in 'ModelClass::LoadModel'
   MyEngine.vcxproj -> C:\Users\junyong\source\repos\MyEngine\x64\Debug\MyEngine.exe

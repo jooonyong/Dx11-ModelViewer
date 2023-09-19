@@ -1,7 +1,10 @@
 #pragma once
+class ModelClass;
 
 class ModelShaderClass : public AlignedAllocationPolicy<16>
 {
+	friend class ModelClass;
+
 private:
 	struct MatrixBufferType
 	{

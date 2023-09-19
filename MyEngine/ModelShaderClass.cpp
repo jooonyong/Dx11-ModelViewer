@@ -122,10 +122,10 @@ bool ModelShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 	pixelShaderBuffer = nullptr;
 
 	D3D11_BUFFER_DESC matrixBufferDesc;
-	matrixBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = 0;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
 
@@ -134,7 +134,6 @@ bool ModelShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 	{
 		return false;
 	}
-
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -200,8 +199,6 @@ void ModelShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
 	ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture)
 {
-	HRESULT result;
-
 	worldMatrix = XMMatrixTranspose(worldMatrix);
 	viewMatrix = XMMatrixTranspose(viewMatrix);
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
@@ -224,6 +221,8 @@ bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	deviceContext->PSSetShaderResources(0, 1, &bodyTexture);
 	deviceContext->PSSetShaderResources(1, 1, &faceTexture);
 	deviceContext->PSSetShaderResources(2, 1, &hairTexture);
+
+	return true;
 }
 
 void ModelShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
@@ -235,4 +234,5 @@ void ModelShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
 
 	deviceContext->DrawIndexed(indexCount, 0, 0);
+
 }

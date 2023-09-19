@@ -34,9 +34,9 @@ void ModelClass::ShutDown()
 	ReleaseTextures();
 }
 
-void ModelClass::Render(ID3D11DeviceContext* deviceContext)
+void ModelClass::Render(ID3D11DeviceContext* deviceContext, int numBuffer)
 {
-	RenderBuffers(deviceContext);
+	RenderBuffers(deviceContext, numBuffer);
 }
 
 ID3D11ShaderResourceView* ModelClass::GetTexture1()
@@ -54,7 +54,7 @@ ID3D11ShaderResourceView* ModelClass::GetTexture3()
 	return m_texture3->GetTexture();
 }
 
-int ModelClass::GetIndexCount(int nBufferNum)
+unsigned int ModelClass::GetIndexCount(int nBufferNum)
 {
 	return m_indexCount[nBufferNum];
 }
@@ -66,17 +66,16 @@ int ModelClass::GetNumMeshes()
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
 {
-	m_vertexBuffer = new ID3D11Buffer* [m_NumBuffers];
-	m_indexBuffer = new ID3D11Buffer* [m_NumBuffers];
+	m_vertexBuffer.resize(m_NumBuffers);
+	m_indexBuffer.resize(m_NumBuffers);
 
 	for (int i = 0; i < m_NumBuffers; i++)
 	{
 		VertexType* vertices = new VertexType[m_vertexCount[i]];
-		unsigned long* indices = new unsigned long[m_indexCount[i]];
 
 		for (int j = 0; j < m_vertexCount[i]; j++)
 		{
-			vertices[j].position = XMFLOAT3(m_model[i][j].x, m_model[i][j].y, m_model[i][j].z);
+			vertices[j].position = XMFLOAT3(m_model[i][j].x * 10, m_model[i][j].y *10, m_model[i][j].z *10);
 			vertices[j].texture = XMFLOAT2(m_model[i][j].tu, m_model[i][j].tv);
 			vertices[j].normal = XMFLOAT3(m_model[i][j].nx, m_model[i][j].ny, m_model[i][j].nz);
 		}
@@ -94,11 +93,13 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		vertexData.SysMemPitch = 0;
 		vertexData.SysMemSlicePitch = 0;
 
-		device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer[i]);
+		ID3D11Buffer* tempBuffer1;
+		device->CreateBuffer(&vertexBufferDesc, &vertexData, &tempBuffer1);
+		m_vertexBuffer[i] = tempBuffer1;
 
 		D3D11_BUFFER_DESC indexBufferDesc;
 		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount[i];
+		indexBufferDesc.ByteWidth = sizeof(unsigned int) * m_indexCount[i];
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexBufferDesc.CPUAccessFlags = 0;
 		indexBufferDesc.MiscFlags = 0;
@@ -109,11 +110,11 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		indexData.SysMemPitch = 0;
 		indexData.SysMemSlicePitch = 0;
 
-		device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer[i]);
+		ID3D11Buffer* tempBuffer2;
+		device->CreateBuffer(&indexBufferDesc, &indexData, &tempBuffer2);
+		m_indexBuffer[i] = tempBuffer2;
 
 		delete[] vertices;
-		vertices = nullptr;
-
 	}
 
 	return true;
@@ -121,36 +122,37 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 void ModelClass::ShutDownBuffers()
 {
-	if (m_indexBuffer)
+	if (m_indexBuffer.size() >=0)
 	{
 		for (int i = 0; i < m_NumBuffers; i++)
 		{
 			m_indexBuffer[i]->Release();
 			m_indexBuffer[i] = nullptr;
 		}
+		m_indexBuffer.clear();
+		m_indexBuffer.shrink_to_fit();
 	}
 
-	if (m_vertexBuffer)
+	if (m_vertexBuffer.size() >= 0)
 	{
 		for (int i = 0; i < m_NumBuffers; i++)
 		{
 			m_vertexBuffer[i]->Release();
 			m_vertexBuffer[i] = nullptr;
 		}
+		m_vertexBuffer.clear();
+		m_vertexBuffer.shrink_to_fit();
 	}
 }
 
-void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext, int bufferNum)
 {
 	UINT stride = sizeof(VertexType);
 	UINT offset = 0;
 
-	for (int i = 0; i < m_NumBuffers; i++)
-	{
-		deviceContext->IASetVertexBuffers(0, m_NumBuffers, &m_vertexBuffer[i], &stride, &offset);
-		deviceContext->IASetIndexBuffer(m_indexBuffer[i], DXGI_FORMAT_R32_UINT, 0);
-	}
-	
+	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer[bufferNum], &stride, &offset);
+	deviceContext->IASetIndexBuffer(m_indexBuffer[bufferNum], DXGI_FORMAT_R32_UINT, 0);
+
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -173,10 +175,10 @@ bool ModelClass::LoadModel(const WCHAR* modelFileName)
 
 	m_NumBuffers = scene->mNumMeshes;
 	
-	m_model = new ModelType* [m_NumBuffers];
-	m_indexCount = new unsigned int[m_NumBuffers];
+	m_model.resize(m_NumBuffers);
 	m_vertexCount = new unsigned int[m_NumBuffers];
-	m_indices = new unsigned int* [m_NumBuffers];
+	m_indexCount = new unsigned int[m_NumBuffers];
+	m_indices.resize(m_NumBuffers);
 
 	for (int i = 0; i < childNodeNum; i++) //child node 4°³
 	{
@@ -228,23 +230,23 @@ bool ModelClass::LoadModel(const WCHAR* modelFileName)
 
 void ModelClass::ReleaseModel()
 {
-	if (m_indices)
+	if (m_indices.size() >= 0)
 	{
 		for (int i = 0; i < m_NumBuffers; i++)
 		{
 			delete[] m_indices[i];
 		}
-		delete[] m_indices;
-		m_indices = nullptr;
+		m_indices.clear(); 
+		m_indices.shrink_to_fit();
 	}
-	if (m_model)
+	if (m_model.size() >= 0)
 	{
 		for (int i = 0; i < m_NumBuffers; i++)
 		{
 			delete[] m_model[i];
 		}
-		delete[] m_model;
-		m_model = nullptr;
+		m_model.clear();
+		m_model.shrink_to_fit();
 	}
 	if (m_vertexCount)
 	{

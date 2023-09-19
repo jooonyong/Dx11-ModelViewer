@@ -15,6 +15,7 @@ class ModelShaderClass;
 
 class GraphicsClass
 {
+	friend class ModelClass;
 public:
 	GraphicsClass() = default;
 	GraphicsClass(const GraphicsClass& other);
