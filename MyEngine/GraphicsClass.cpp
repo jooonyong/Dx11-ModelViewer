@@ -81,18 +81,39 @@ bool GraphicsClass::Frame()
 bool GraphicsClass::Render()
 {
 	m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
-	m_Camera->Render();
 	
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	//m_Camera->SetRotation(90.0f, 0.0f, 0.0f);
+	m_Camera->Render();
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_Direct3D->GetWorldMatrix(worldMatrix);
+
+	XMMATRIX transform = XMMatrixRotationX(XMConvertToRadians(-90.0f)) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	
+	worldMatrix =transform;
+
+	//worldMatrix = XMMatrixTranslation(0.0f, 5.0f, 0.0f);
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
 	for (int i = 0; i < m_Model->GetNumMeshes(); i++)
 	{
 		m_Model->Render(m_Direct3D->GetDeviceContext(), i); //버텍스 버퍼 인덱스버퍼 설정
-		m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
-			m_Model->GetTexture1(), m_Model->GetTexture2(), m_Model->GetTexture3());
+		if (i < 2)
+		{
+			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
+				m_Model->GetTexture3());
+		}
+		else if (i > 5)
+		{
+			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
+				m_Model->GetTexture1());
+		}
+		else
+		{
+			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
+				m_Model->GetTexture2());
+		}
+		
 	}
 	
 	m_Direct3D->EndScene();

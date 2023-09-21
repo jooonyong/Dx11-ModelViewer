@@ -16,8 +16,14 @@ public:
 	void Render();
 	void GetViewMatrix(XMMATRIX&);
 
+	void MoveForward(float value);
+	void MoveRight(float value);
+
+	void UpdateRotate(float value);
+
 private:
 	XMFLOAT3 m_position;
 	XMFLOAT3 m_rotation;
 	XMMATRIX m_viewMatrix;
+	XMFLOAT3 m_lookAt;
 };

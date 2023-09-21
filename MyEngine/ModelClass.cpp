@@ -75,7 +75,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 		for (int j = 0; j < m_vertexCount[i]; j++)
 		{
-			vertices[j].position = XMFLOAT3(m_model[i][j].x * 10, m_model[i][j].y *10, m_model[i][j].z *10);
+			vertices[j].position = XMFLOAT3(m_model[i][j].x * 3, m_model[i][j].y *3, m_model[i][j].z *3);
 			vertices[j].texture = XMFLOAT2(m_model[i][j].tu, m_model[i][j].tv);
 			vertices[j].normal = XMFLOAT3(m_model[i][j].nx, m_model[i][j].ny, m_model[i][j].nz);
 		}

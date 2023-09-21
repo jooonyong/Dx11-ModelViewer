@@ -3,7 +3,7 @@
 class InputClass
 {
 public:
-	InputClass();
+	InputClass() = default;
 	InputClass(const InputClass& other);
 	~InputClass();
 

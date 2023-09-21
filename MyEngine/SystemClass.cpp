@@ -99,8 +99,13 @@ LRESULT SystemClass::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 
 bool SystemClass::Frame()
 {
+	int mouseX = 0;
+	int mouseY = 0;
+
 	if (!m_Input->Frame())
 		return false;
+
+	m_Input->GetMouseLocation(mouseX, mouseY);
 
 	if (!m_Graphics->Frame())
 	{
@@ -137,7 +142,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	//window class 등록
 	RegisterClassEx(&wc);
 
-	//모니 화면 해상도
+	//모니터 화면 해상도
 	screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 

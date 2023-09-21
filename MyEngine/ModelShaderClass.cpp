@@ -20,9 +20,9 @@ void ModelShaderClass::ShutDown()
 }
 
 bool ModelShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, 
-	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture)
+	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
-	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, bodyTexture, faceTexture, hairTexture))
+	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture))
 	{
 		return false;
 	}
@@ -197,7 +197,7 @@ void ModelShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 }
 
 bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
-	ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture)
+	ID3D11ShaderResourceView* texture)
 {
 	worldMatrix = XMMatrixTranspose(worldMatrix);
 	viewMatrix = XMMatrixTranspose(viewMatrix);
@@ -218,9 +218,7 @@ bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 
 	deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
 
-	deviceContext->PSSetShaderResources(0, 1, &bodyTexture);
-	deviceContext->PSSetShaderResources(1, 1, &faceTexture);
-	deviceContext->PSSetShaderResources(2, 1, &hairTexture);
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 
 	return true;
 }

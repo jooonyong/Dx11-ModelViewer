@@ -1,8 +1,8 @@
 .vs
 x64
-MyEngine/Include
-MyEngine/lilb
-MyEngine/Model
+MyEngine/Include/
+MyEngine/lib/
+MyEngine/Model/
 MyEngine/x64
 MyEngine/MyEngine.aps
 MyEngine/MyEngine.ico

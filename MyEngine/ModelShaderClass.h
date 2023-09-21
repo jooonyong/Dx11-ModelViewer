@@ -20,15 +20,13 @@ public:
 
 	bool Initialize(ID3D11Device* device, HWND hwnd);
 	void ShutDown();
-	bool Render(ID3D11DeviceContext* deviceContext, int, XMMATRIX, XMMATRIX, XMMATRIX,
-		ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture);
+	bool Render(ID3D11DeviceContext* deviceContext, int, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView* texture);
 
 private:
 	bool InitializeShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsfilename, const WCHAR* psfilename);
 	void ShutDownShader();
 	void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR*);
-	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX, XMMATRIX, XMMATRIX,
-		ID3D11ShaderResourceView* bodyTexture, ID3D11ShaderResourceView* faceTexture, ID3D11ShaderResourceView* hairTexture);
+	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView* texture);
 	void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
 
 private:

@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "InputClass.h"
 
-InputClass::InputClass()
-{
-}
-
 InputClass::InputClass(const InputClass& other)
 {
 }
@@ -170,5 +166,9 @@ void InputClass::ProcessInput()
 	if (m_mouseY > m_screenHeight)
 		m_mouseY = m_screenHeight;
 
+	/*if (m_keyboardState[DIK_LEFT])
+	{
+		m_camera
+	}*/
 }
 
