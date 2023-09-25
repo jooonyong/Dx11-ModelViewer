@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 100.0f;
 const float SCREEN_NEAR = 1.0f;
@@ -23,10 +23,10 @@ public:
 
 	bool Initialize(int screenWidth, int screenHeight, HWND hwnd);
 	void ShutDown();
-	bool Frame();
+	bool Frame(float rotationX, float rotationY, float translationZ, float translationX);
 
 private:
-	bool Render();
+	bool Render(float rotationX, float rotationY);
 
 private:
 	D3DClass* m_Direct3D = nullptr;

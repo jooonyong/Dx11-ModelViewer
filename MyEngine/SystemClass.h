@@ -28,6 +28,9 @@ private:
 
 	InputClass* m_Input = nullptr;
 	GraphicsClass* m_Graphics = nullptr;
+
+	int m_prevMouseX = 0;
+	int m_prevMouseY = 0;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

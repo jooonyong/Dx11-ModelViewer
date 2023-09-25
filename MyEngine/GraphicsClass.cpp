@@ -73,26 +73,27 @@ void GraphicsClass::ShutDown()
 	}
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(float rotationX, float rotationY, float translationZ, float translationX)
 {
-	return Render();
+	m_Camera->SetRotation(rotationX, rotationY, 0.0f);
+	m_Camera->Render(rotationX, rotationY, translationZ, translationX);
+
+	return Render(rotationX, rotationY);
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(float rotationX, float rotationY)
 {
-	m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
+	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 	
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-	//m_Camera->SetRotation(90.0f, 0.0f, 0.0f);
-	m_Camera->Render();
+	
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_Direct3D->GetWorldMatrix(worldMatrix);
 
-	XMMATRIX transform = XMMatrixRotationX(XMConvertToRadians(-90.0f)) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	
-	worldMatrix =transform;
+	XMMATRIX worldTransform = XMMatrixRotationX(XMConvertToRadians(-90.0f)) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	worldTransform *= XMMatrixTranslation(0, -2,0);
+	worldMatrix = worldTransform;
 
-	//worldMatrix = XMMatrixTranslation(0.0f, 5.0f, 0.0f);
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
 	for (int i = 0; i < m_Model->GetNumMeshes(); i++)
@@ -113,7 +114,6 @@ bool GraphicsClass::Render()
 			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
 				m_Model->GetTexture2());
 		}
-		
 	}
 	
 	m_Direct3D->EndScene();

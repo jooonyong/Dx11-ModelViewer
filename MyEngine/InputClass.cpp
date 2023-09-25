@@ -100,7 +100,10 @@ bool InputClass::Frame()
 	{
 		return false;
 	}
-	ProcessInput();
+	ProcessMouseInput();
+	InitializeMember();
+	ProcessKeyboardInput();
+
 	return true;
 }
 
@@ -113,10 +116,71 @@ bool InputClass::IsEscapePressed()
 	return false;
 }
 
+bool InputClass::IsMouseClicked()
+{
+	if (m_mouseState.rgbButtons[0] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::CheckW()
+{
+	if (m_forward)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::CheckS()
+{
+	if (m_backward)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::CheckA()
+{
+	if (m_left)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::CheckD()
+{
+	if (m_right)
+	{
+		return true;
+	}
+	return false;
+}
+
+
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
 	mouseX = m_mouseX;
 	mouseY = m_mouseY;
+}
+
+float InputClass::GetRotationX()
+{
+	return m_rotationX;
+}
+
+float InputClass::GetRotationY()
+{
+	return m_rotationY;
+}
+
+DIMOUSESTATE* InputClass::GetMouseState()
+{
+	return &m_mouseState;
 }
 
 bool InputClass::ReadKeyboard()
@@ -151,8 +215,17 @@ bool InputClass::ReadMouse()
 	return true;
 }
 
-void InputClass::ProcessInput()
+void InputClass::InitializeMember()
 {
+	m_forward = false;
+	m_backward = false;
+	m_left = false;
+	m_right = false;
+}
+
+void InputClass::ProcessMouseInput()
+{
+	//마우스 위치 업데이트
 	m_mouseX += m_mouseState.lX;
 	m_mouseY += m_mouseState.lY;
 
@@ -165,10 +238,26 @@ void InputClass::ProcessInput()
 		m_mouseX = m_screenWidth;
 	if (m_mouseY > m_screenHeight)
 		m_mouseY = m_screenHeight;
-
-	/*if (m_keyboardState[DIK_LEFT])
-	{
-		m_camera
-	}*/
 }
+
+void InputClass::ProcessKeyboardInput()
+{
+	if (m_keyboardState[DIK_W] & 0x80)
+	{
+		m_forward = true;
+	}
+	if (m_keyboardState[DIK_S] & 0x80)
+	{
+		m_backward = true;
+	}
+	if (m_keyboardState[DIK_A] & 0x80)
+	{
+		m_left = true;
+	}
+	if (m_keyboardState[DIK_D] & 0x80)
+	{
+		m_right = true;
+	}
+}
+
 

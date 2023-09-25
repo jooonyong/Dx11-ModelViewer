@@ -102,12 +102,58 @@ bool SystemClass::Frame()
 	int mouseX = 0;
 	int mouseY = 0;
 
+	float rotationX = 0.0f;
+	float rotationY = 0.0f;
+
 	if (!m_Input->Frame())
 		return false;
+	
+	if (m_Input->IsMouseClicked())
+	{
+		m_Input->GetMouseLocation(mouseX, mouseY);
+		int deltaX = m_Input->GetMouseState()->lX;
+		int deltaY = m_Input->GetMouseState()->lY;
 
-	m_Input->GetMouseLocation(mouseX, mouseY);
+		rotationY = deltaX * 0.002f;
+		rotationX = deltaY * 0.002f;
+		/*if (rotationY < 0)
+		{
+			rotationY = 0.0f;
+		}
+		if (rotationX < 0)
+		{
+			rotationX = 0.0f;
+		}
+		if (rotationY >= 360.0f)
+		{
+			rotationY = 360.0f;
+		}
+		if (rotationX >= 360.0f)
+		{
+			rotationX = 360.0f;
+		}*/
+	}
+	float translationZ = 0.0f;
+	float translationX = 0.0f;
 
-	if (!m_Graphics->Frame())
+	if (m_Input->CheckW())
+	{
+		translationZ += 0.1f;
+	}
+	if (m_Input->CheckS())
+	{
+		translationZ -= 0.1f;
+	}
+	if (m_Input->CheckA())
+	{
+		translationX -= 0.1f;
+	}
+	if (m_Input->CheckD())
+	{
+		translationX += 0.1f;
+	}
+	
+	if (!m_Graphics->Frame(rotationX, rotationY, translationZ, translationX))
 	{
 		return false;
 	}
@@ -200,7 +246,7 @@ void SystemClass::ShutDownWindows()
 	UnregisterClass(m_applicationName, m_hinstance);
 	m_hinstance = NULL;
 
-	//외부 포인터 차조 초기화
+	//외부 포인터 참조 초기화
 	ApplicationHandle = NULL;
 }
 
@@ -215,7 +261,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
-
+	/*case WM_MOUSEMOVE:
+		LPPOINT prevPoint;
+		GetCursorPos(prevPoint);
+		if(m_Input)*/
 	default:
 		return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 	}
