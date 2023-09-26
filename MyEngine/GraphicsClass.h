@@ -12,6 +12,7 @@ class CameraClass;
 class ModelClass;
 class TextureClass;
 class ModelShaderClass;
+class LightClass;
 
 class GraphicsClass
 {
@@ -32,5 +33,6 @@ private:
 	D3DClass* m_Direct3D = nullptr;
 	CameraClass* m_Camera = nullptr;
 	ModelClass* m_Model = nullptr;
+	LightClass* m_Light = nullptr;
 	ModelShaderClass* m_ModelShader = nullptr;
 };

@@ -4,6 +4,7 @@
 #include "CameraClass.h"
 #include "ModelClass.h"
 #include "ModelShaderClass.h"
+#include "LightClass.h"
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
@@ -43,6 +44,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_Light = new LightClass{};
+	if (!m_Light)
+	{
+		return false;
+	}
+
+	m_Light->SetAmbientColor(0.5f, 0.5f, 0.5f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularColor(0.0f, 0.0f, 0.0f, 1.0f);
+	m_Light->SetSpecularPower(0.0f);
+	m_Light->SetDirection(10.0f, 10.0f, 10.0f);
+
 	return true;
 }
 
@@ -53,6 +66,11 @@ void GraphicsClass::ShutDown()
 		m_ModelShader->ShutDown();
 		delete m_ModelShader;
 		m_ModelShader = nullptr;
+	}
+	if (m_Light)
+	{
+		delete m_Light;
+		m_Light = nullptr;
 	}
 	if (m_Camera)
 	{
@@ -91,7 +109,6 @@ bool GraphicsClass::Render(float rotationX, float rotationY)
 	m_Direct3D->GetWorldMatrix(worldMatrix);
 
 	XMMATRIX worldTransform = XMMatrixRotationX(XMConvertToRadians(-90.0f)) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	worldTransform *= XMMatrixTranslation(0, -2,0);
 	worldMatrix = worldTransform;
 
 	m_Direct3D->GetProjectionMatrix(projectionMatrix);
@@ -102,17 +119,20 @@ bool GraphicsClass::Render(float rotationX, float rotationY)
 		if (i < 2)
 		{
 			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
-				m_Model->GetTexture3());
+				m_Model->GetTexture3(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light->GetDirection(),
+				m_Camera->GetPosition(), m_Light->GetSpecularPower());
 		}
 		else if (i > 5)
 		{
 			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
-				m_Model->GetTexture1());
+				m_Model->GetTexture1(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light->GetDirection(),
+				m_Camera->GetPosition(), m_Light->GetSpecularPower());
 		}
 		else
 		{
 			m_ModelShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
-				m_Model->GetTexture2());
+				m_Model->GetTexture2(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetSpecularColor(), m_Light->GetDirection(),
+				m_Camera->GetPosition(), m_Light->GetSpecularPower());
 		}
 	}
 	

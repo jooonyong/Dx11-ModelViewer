@@ -114,24 +114,9 @@ bool SystemClass::Frame()
 		int deltaX = m_Input->GetMouseState()->lX;
 		int deltaY = m_Input->GetMouseState()->lY;
 
-		rotationY = deltaX * 0.002f;
-		rotationX = deltaY * 0.002f;
-		/*if (rotationY < 0)
-		{
-			rotationY = 0.0f;
-		}
-		if (rotationX < 0)
-		{
-			rotationX = 0.0f;
-		}
-		if (rotationY >= 360.0f)
-		{
-			rotationY = 360.0f;
-		}
-		if (rotationX >= 360.0f)
-		{
-			rotationX = 360.0f;
-		}*/
+		rotationY = deltaX * 0.001f;
+		rotationX = deltaY * 0.001f;
+		
 	}
 	float translationZ = 0.0f;
 	float translationX = 0.0f;

@@ -5,6 +5,11 @@ cbuffer MatrixType
 	matrix projectionMatrix;
 };
 
+cbuffer CameraType
+{
+	float3 cameraPosition;
+	float padding;
+}
 struct VertexInputType
 {
 	float4 position : POSITION;
@@ -17,6 +22,7 @@ struct PixelInputType
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float3 viewDirection : TEXCOORD1;
 };
 
 PixelInputType main(VertexInputType input)
@@ -33,6 +39,9 @@ PixelInputType main(VertexInputType input)
 
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
 	output.normal = normalize(output.normal);
+
+	float4 worldPosition = mul(input.position, worldMatrix);
+	output.viewDirection = worldPosition.xyz - cameraPosition.xyz;
 
 	return output;
 }

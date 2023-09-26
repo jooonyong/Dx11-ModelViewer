@@ -20,9 +20,11 @@ void ModelShaderClass::ShutDown()
 }
 
 bool ModelShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, 
-	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 ambient, XMFLOAT4 diffuse, XMFLOAT4 specular, 
+	XMFLOAT3 lightDirection, XMFLOAT3 cameraPosition, float specularPower)
 {
-	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture))
+	if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, ambient, diffuse, specular, lightDirection,
+		cameraPosition, specularPower))
 	{
 		return false;
 	}
@@ -135,6 +137,21 @@ bool ModelShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 		return false;
 	}
 
+	D3D11_BUFFER_DESC cameraBufferDesc;
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&cameraBufferDesc, NULL, &m_cameraBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -156,17 +173,39 @@ bool ModelShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 		return false;
 	}
 
+	D3D11_BUFFER_DESC lightBufferDesc;
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
 	return true;
 }
 
 void ModelShaderClass::ShutDownShader()
 {
+	if (m_lightBuffer)
+	{
+		m_lightBuffer->Release();
+		m_lightBuffer = nullptr;
+	}
 	if (m_sampleState)
 	{
 		m_sampleState->Release();
 		m_sampleState = nullptr;
 	}
-
+	if (m_cameraBuffer)
+	{
+		m_cameraBuffer->Release();
+		m_cameraBuffer = nullptr;
+	}
 	if (m_matrixBuffer)
 	{
 		m_matrixBuffer->Release();
@@ -197,7 +236,7 @@ void ModelShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 }
 
 bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
-	ID3D11ShaderResourceView* texture)
+	ID3D11ShaderResourceView* texture, XMFLOAT4 ambient, XMFLOAT4 diffuse, XMFLOAT4 specular, XMFLOAT3 lightDirection, XMFLOAT3 cameraPosition, float specularPower)
 {
 	worldMatrix = XMMatrixTranspose(worldMatrix);
 	viewMatrix = XMMatrixTranspose(viewMatrix);
@@ -217,6 +256,31 @@ bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	deviceContext->Unmap(m_matrixBuffer, 0);
 
 	deviceContext->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+
+	if (FAILED(deviceContext->Map(m_cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	{
+		return false;
+	}
+	CameraBufferType* dataPtr2 = (CameraBufferType*)mappedResource.pData;
+	dataPtr2->cameraPosition = cameraPosition;
+
+	deviceContext->Unmap(m_cameraBuffer, 0);
+	deviceContext->VSSetConstantBuffers(1, 1, &m_cameraBuffer);
+
+	if (FAILED(deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	{
+		return false;
+	}
+
+	LightBufferType* dataPtr3 = (LightBufferType*)mappedResource.pData;
+	dataPtr3->ambient = ambient;
+	dataPtr3->diffuse = diffuse;
+	dataPtr3->specular = specular;
+	dataPtr3->lightDirection = lightDirection;
+	dataPtr3->specularPower = specularPower;
+
+	deviceContext->Unmap(m_lightBuffer, 0);
+	deviceContext->PSSetConstantBuffers(0, 1, &m_lightBuffer);
 
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 

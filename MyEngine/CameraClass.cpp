@@ -5,19 +5,17 @@ CameraClass::CameraClass()
 {
 	m_position.x = 0.0f;
 	m_position.y = 3.0f;
-	m_position.z = -6.0f;
+	m_position.z = -6.0f; 
 	m_rotation.x = 0;
 	m_rotation.y = 0;
 	m_rotation.z = 0;
-	m_lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	m_lookAt = XMVectorSet(0.0f, 3.0f, 4.0f, 0.0f);
 	m_up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 }
 
 CameraClass::CameraClass(const CameraClass& other)
 {
-	m_position.x = other.m_position.x;
-	m_position.y = other.m_position.y;
-	m_position.z = other.m_position.z;
+	m_position = other.m_position;
 	m_rotation.x = other.m_rotation.x;
 	m_rotation.y = other.m_rotation.y;
 	m_rotation.z = other.m_rotation.z;
@@ -34,6 +32,7 @@ void CameraClass::SetTranslation(float x, float y, float z)
 	m_position.x += x;
 	m_position.y += y;
 	m_position.z += z;
+
 }
 
 void CameraClass::SetPosition(float x, float y, float z)
@@ -62,15 +61,14 @@ XMFLOAT3 CameraClass::GetRotation()
 
 void CameraClass::Render(float rotationX, float rotationY, float translationZ, float translationX)
 {
-	XMFLOAT3 position;
-	
 	XMMATRIX rotation = XMMatrixRotationX(rotationX) * XMMatrixRotationY(rotationY);
 	m_up = XMVector3Transform(m_up, rotation);
 	
 	SetTranslation(translationX, 0.0f, translationZ);
-	position = m_position;
-
-	XMVECTOR positionVector = XMLoadFloat3(&position);
+	
+	XMVECTOR positionVector;
+	positionVector = XMLoadFloat3(&m_position);
+	positionVector = XMVector3Transform(positionVector, rotation);
 
 	m_rotation.x = rotationX;
 	m_rotation.y = rotationY;

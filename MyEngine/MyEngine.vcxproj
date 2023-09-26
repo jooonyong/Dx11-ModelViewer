@@ -146,10 +146,11 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
+    <ClInclude Include="LightClass.h" />
+    <ClInclude Include="LightShaderClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ModelShaderClass.h" />
     <ClInclude Include="MyEngine.h" />
-    <ClInclude Include="PositionClass.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SystemClass.h" />
@@ -161,10 +162,11 @@
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
+    <ClCompile Include="LightClass.cpp" />
+    <ClCompile Include="LightShaderClass.cpp" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ModelShaderClass.cpp" />
     <ClCompile Include="MyEngine.cpp" />
-    <ClCompile Include="PositionClass.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
