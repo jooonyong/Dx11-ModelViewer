@@ -2,6 +2,7 @@
 
 class InputClass;
 class GraphicsClass;
+class FPSClass;
 
 class SystemClass
 {
@@ -28,7 +29,7 @@ private:
 
 	InputClass* m_Input = nullptr;
 	GraphicsClass* m_Graphics = nullptr;
-
+	FPSClass* m_FPS = nullptr;
 	int m_prevMouseX = 0;
 	int m_prevMouseY = 0;
 };

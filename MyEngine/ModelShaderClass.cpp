@@ -261,6 +261,7 @@ bool ModelShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	{
 		return false;
 	}
+
 	CameraBufferType* dataPtr2 = (CameraBufferType*)mappedResource.pData;
 	dataPtr2->cameraPosition = cameraPosition;
 

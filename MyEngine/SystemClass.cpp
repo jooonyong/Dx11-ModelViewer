@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "InputClass.h"
 #include "GraphicsClass.h"
+#include "FPSClass.h"
 #include "SystemClass.h"
 
 SystemClass::SystemClass(const SystemClass& other)
@@ -40,11 +41,23 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	m_FPS = new FPSClass{};
+	if (!m_FPS)
+	{
+		return false;
+	}
+	m_FPS->Initialize();
+	
 	return true;
 }
 
 void SystemClass::ShutDown()
 {
+	if (m_FPS)
+	{
+		delete m_FPS;
+		m_FPS = nullptr;
+	}
 	//m_Graphics °´Ã¼ ¹ÝÈ¯
 	if (m_Graphics)
 	{
@@ -137,6 +150,9 @@ bool SystemClass::Frame()
 	{
 		translationX += 0.1f;
 	}
+	
+	m_FPS->Frame();
+	std::cout << m_FPS->GetFPS() << std::endl;
 	
 	if (!m_Graphics->Frame(rotationX, rotationY, translationZ, translationX))
 	{

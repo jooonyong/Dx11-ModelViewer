@@ -8,12 +8,17 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib") 
+
 #include <d3d11_1.h>
 #include <mmsystem.h>
 #include <dsound.h>
 #include <dinput.h>
 #include <d3dcompiler.h>
 #include <directxmath.h>
+#include <dwrite.h>
+#include <d2d1.h>
 
 using namespace DirectX;
 

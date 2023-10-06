@@ -71,8 +71,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 	{
 		return false;
 	}
-
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+	return true;
 }
 
 void LightShaderClass::ShutDownShader()

@@ -50,11 +50,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	m_Light->SetAmbientColor(0.5f, 0.5f, 0.5f, 1.0f);
+	m_Light->SetAmbientColor(0.7f, 0.7f, 0.7f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularColor(0.0f, 0.0f, 0.0f, 1.0f);
 	m_Light->SetSpecularPower(0.0f);
-	m_Light->SetDirection(10.0f, 10.0f, 10.0f);
+	m_Light->SetDirection(-10.0f, 10.0f, 10.0f);
 
 	return true;
 }
@@ -101,7 +101,7 @@ bool GraphicsClass::Frame(float rotationX, float rotationY, float translationZ, 
 
 bool GraphicsClass::Render(float rotationX, float rotationY)
 {
-	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+	m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
 	
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	
